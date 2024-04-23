@@ -177,50 +177,53 @@ function genderEthnicity(tabName){
     
     const color = d3.scaleOrdinal()
       .domain(subGroup)
-      .range(['#e41a1c', '#377eb8', '#4daf4a', "#fdaffa", "#377be8"]);
+      .range(["#b30000", "#7c1158", "#4421af", "#1a53ff", "#0d88e6"]);
 
-      svg.append("g")
-      .selectAll("g")
-      .data(groups.entries())
-      .enter()
-      .append("g")
-      .attr("transform", function(d) {
-          return "translate(" + x0(d[0]) + ",0)";
-      })
-      .selectAll("rect")
-      .data(function(d) {
-          return subGroup.map(function(key) {
-              return { key: key, value: d[1].get(key) || 0 };
-          });
-      })
-      .enter()
-      .append("rect")
-      .attr("x", function(d) {
-          return x1(d.key);
-      })
-      .attr("y", function(d) {
-          return yScale(d.value);
-      })
-      .attr("width", x1.bandwidth())
-      .attr("height", function(d) {
-          return height - yScale(d.value);
-      })
-      .attr("fill", function(d) {
-          return color(d.key);4
-      })
-      .on("mouseover", function(event, d) {
-          d3.select(this).attr("opacity", 0.7);
-          svg.append("text")
-              .attr("class", "hover-text")
-              .attr("x", width / 2)
-              .attr("y", margin.top + margin.bottom)
-              .attr("text-anchor", "middle")
-              .text(`${d.key}: ${d.value}`)
-      })
-      .on("mouseout", function(d) {
-          d3.select(this).attr("opacity", 1);
-          svg.select(".hover-text").remove();
-      });
+    //**************************************************************************
+    //Note: This portion of code was created with the help of ChatGPT
+    svg.append("g")
+        .selectAll("g")
+        .data(groups.entries())
+        .enter()
+        .append("g")
+        .attr("transform", function(d) {
+            return "translate(" + x0(d[0]) + ",0)";
+        })
+        .selectAll("rect")
+        .data(function(d) {
+            return subGroup.map(function(key) {
+            return { key: key, value: d[1].get(key) || 0 };
+            });
+        })
+        .enter()
+        .append("rect")
+        .attr("x", function(d) {
+            return x1(d.key);
+        })
+        .attr("y", function(d) {
+            return yScale(d.value);
+        })
+        .attr("width", x1.bandwidth())
+        .attr("height", function(d) {
+            return height - yScale(d.value);
+        })
+        .attr("fill", function(d) {
+            return color(d.key);4
+        })
+        .on("mouseover", function(event, d) {
+            d3.select(this).attr("opacity", 0.7);
+            svg.append("text")
+                .attr("class", "hover-text")
+                .attr("x", width / 2)
+                .attr("y", margin.top + margin.bottom)
+                .attr("text-anchor", "middle")
+                .text(`${d.key}: ${d.value}`)
+            })
+        .on("mouseout", function(d) {
+            d3.select(this).attr("opacity", 1);
+            svg.select(".hover-text").remove();
+        });
+    //**************************************************************************
     
     svg.append("g")
       .attr("class", "axis")
