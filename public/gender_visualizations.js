@@ -3,7 +3,6 @@ import { fetch_data } from '../public/read_data.js';
 let studyData;
 
 export function genderStatistics(containerId){
-        // Your D3.js code for visualization goes here
         fetch_data('../data/study_performance.csv').then(Data => {
 
             studyData = Data;
@@ -12,9 +11,16 @@ export function genderStatistics(containerId){
                 <div class="tab">
                     <button class="tablinks" data-tab="visualization1">Gender and Scores</button>
                     <button class="tablinks" data-tab="visualization2">Gender and Ethnicity</button>
+                    <button class="tablinks" data-tab="visualization3">Gender and Parent Education</button>
+                    <button class="tablinks" data-tab="visualization4">Gender and Lunch Type</button>
+                    <button class="tablinks" data-tab="visualization5">Gender and Prep Course</button>
                 </div>
                 <div id="visualization1" class="tabcontent"></div>
                 <div id="visualization2" class="tabcontent"></div>
+                <div id="visualization3" class="tabcontent"></div>
+                <div id="visualization4" class="tabcontent"></div>
+                <div id="visualization5" class="tabcontent"></div>
+
             `;
 
             document.getElementById(containerId).innerHTML = tabContent;
@@ -28,7 +34,7 @@ export function genderStatistics(containerId){
                 })
             })
 
-            loadGenderVisualizations('visualization2', studyData);
+            loadGenderVisualizations('visualization3', studyData);
         })
         .catch(error => {
             console.error(error)
@@ -54,8 +60,36 @@ function loadGenderVisualizations(tabName){
             genderTestScores(tabName);
         }
         if(tabName === "visualization2"){
-            genderEthnicity(tabName);
+            genderStatisticsByColumnName(tabName, "race_ethnicity");
         }
+        if(tabName == "visualization3"){
+            genderStatisticsByColumnName(tabName, "parental_level_of_education");
+        }
+        if(tabName == "visualization4"){
+            genderStatisticsByColumnName(tabName, "lunch");
+        }
+        if(tabName == "visualization5"){
+            genderStatisticsByColumnName(tabName, "test_preparation_course");
+        }
+}
+
+function printTitle(columnName){
+    var name = columnName
+    switch(columnName){
+        case "race_ethnicity":
+            name = "Ethnicity";
+            break;
+        case "parental_level_of_education":
+            name =  "Parent's Education Level ";
+            break;
+        case "lunch":
+            name = "Lunch Type";
+            break;
+        case "test_preparation_course":
+            name = "Prep Course Completion";
+            break;
+    }
+    return name;
 }
 
 function printScoreName(scoreName){
@@ -75,69 +109,17 @@ function printScoreName(scoreName){
     return name;
 }
 
-function genderEthnicity(tabName){
+function generateColors(length) {
 
-    // const margin = {top: 15, right: 40, bottom: 40, left: 50}
-    // const width = 460 - margin.left - margin.right;
-    // const height = 400 - margin.top - margin.bottom;
+    var colors = d3.scaleOrdinal(d3.schemeCategory10);
+    return Array.from({ length: length }, (_, i) => colors(i));
+}
 
-    // var groups = d3.rollup(studyData, v => v.length, d => d.gender, d => d.race_ethnicity);
+function genderStatisticsByColumnName(tabName, columnName){
+    var subGroup = [...new Set(studyData.map(d => d[columnName]))];
+    subGroup.sort();
 
-    var subGroup = ["group A", "group B", "group C", "group D", "group E"];
-
-    // var maxCount = d3.max(groups.values(), data=>d3.max(data.values()));
-
-    // var groupArray = Array.from(groups, ([key, value]) => {
-    //     return {gender: key, "group A": 20, "group B": 20, "group C": 20, "group D": 20, "group E": 20};
-    // });
-
-    // const svg = d3.select(`#${tabName}`)
-    //         .append("div")
-    //         .attr("width", width + margin.left + margin.right)
-    //         .attr("height", height + margin.top + margin.bottom);
-
-    // svg.append("svg")
-    //             .attr("width", width + margin.left + margin.right)
-    //             .attr("height", height + margin.top + margin.bottom)
-    //         .append("g")
-    //             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    // const xScale = d3.scaleBand()
-    //             .domain(studyData.map(data => data.gender))
-    //             .range([0, width])
-    //             .padding([0.2]);
-
-    // const yScale = d3.scaleLinear()
-    //             .domain([0, maxCount])
-    //             .nice()
-    //             .range([height, 0]);
-
-    // const xSubScale = d3.scaleBand()
-    //             .domain(subGroup)
-    //             .range([0, xScale.bandwidth()])
-    //             .padding([0.05]);
-
-    // const color = d3.scaleOrdinal()
-    //             .domain(studyData.map(data => data.race_ethnicity))
-    //             .range(['#e41a1c','#377eb8','#4daf4a', "#fdaffa", "#377be8"]);
-
-    // svg.append("g")
-    //     .selectAll("g")
-    //     // Enter in data = loop group per group
-    //     .data(groupArray)
-    //     .enter()
-    //     .append("g")
-    //         .attr("transform", function(d) { return "translate(" + xScale(d.gender) + ",0)"; })
-    //     .selectAll("rect")
-    //     .data(function(d) { return subGroup.map(function(key) { return {key: key, value: d[key]}; }); })
-    //     .enter().append("rect")
-    //         .attr("x", function(d) { return xSubScale(d.key); })
-    //         .attr("y", function(d) { return yScale(d.value); })
-    //         .attr("width", xSubScale.bandwidth())
-    //         .attr("height", function(d) { return height - yScale(d.value); })
-    //         .attr("fill", function(d) { return color(d.key); });
-
-    const margin = { top: 15, right: 40, bottom: 40, left: 50 };
+    const margin = { top: 50, right: 40, bottom: 40, left: 50 };
     const width = 460 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
     
@@ -145,7 +127,7 @@ function genderEthnicity(tabName){
       studyData,
       (v) => v.length,
       (d) => d.gender,
-      (d) => d.race_ethnicity
+      (d) => d[columnName]
     );
     
     var maxCount = d3.max(
@@ -177,7 +159,8 @@ function genderEthnicity(tabName){
     
     const color = d3.scaleOrdinal()
       .domain(subGroup)
-      .range(["#b30000", "#7c1158", "#4421af", "#1a53ff", "#0d88e6"]);
+      .range(generateColors(subGroup.length));
+
 
     //**************************************************************************
     //Note: This portion of code was created with the help of ChatGPT
@@ -215,7 +198,7 @@ function genderEthnicity(tabName){
             svg.append("text")
                 .attr("class", "hover-text")
                 .attr("x", width / 2)
-                .attr("y", margin.top + margin.bottom)
+                .attr("y", -margin.top /2)
                 .attr("text-anchor", "middle")
                 .text(`${d.key}: ${d.value}`)
             })
@@ -239,7 +222,7 @@ function genderEthnicity(tabName){
     .attr("y", 0)
     .attr("text-anchor", "middle")
     .attr("font-size", "12px")
-    .text("Ethnicity Count by Gender");
+    .text(printTitle(columnName) + " by Gender");
 
 }
 
