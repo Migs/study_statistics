@@ -2,18 +2,18 @@ import { fetch_data } from '../public/read_data.js';
 
 let studyData;
 
-export function genderStatistics(containerId){
+export function ethnicityStatistics(containerId){
         fetch_data('../data/study_performance.csv').then(Data => {
 
             studyData = Data;
 
             const tabContent = `
                 <div class="tab">
-                    <button class="tablinks" data-tab="visualization1">Gender and Scores</button>
-                    <button class="tablinks" data-tab="visualization2">Gender and Ethnicity</button>
-                    <button class="tablinks" data-tab="visualization3">Gender and Parent Education</button>
-                    <button class="tablinks" data-tab="visualization4">Gender and Lunch Type</button>
-                    <button class="tablinks" data-tab="visualization5">Gender and Prep Course</button>
+                    <button class="tablinks" data-tab="visualization1">Ethnicity and Scores</button>
+                    <button class="tablinks" data-tab="visualization2">Ethnicity and Gender</button>
+                    <button class="tablinks" data-tab="visualization3">Ethnicity and Parent Education</button>
+                    <button class="tablinks" data-tab="visualization4">Ethnicity and Lunch Type</button>
+                    <button class="tablinks" data-tab="visualization5">Ethnicity and Prep Course</button>
                 </div>
                 <div id="visualization1" class="tabcontent"></div>
                 <div id="visualization2" class="tabcontent"></div>
@@ -34,7 +34,7 @@ export function genderStatistics(containerId){
                 })
             })
 
-            loadGenderVisualizations('visualization1', studyData);
+            loadEthnicityVisualizations('visualization1', studyData);
         })
         .catch(error => {
             console.error(error)
@@ -49,35 +49,35 @@ function openTab(event, tabName){
 
     document.getElementById(tabName).style.display = "block";
     
-    loadGenderVisualizations(tabName);
+    loadEthnicityVisualizations(tabName);
 }
 
-function loadGenderVisualizations(tabName){
+function loadEthnicityVisualizations(tabName){
 
         document.getElementById(tabName).innerHTML = '';
 
         if(tabName === "visualization1"){
-            genderTestScores(tabName);
+            ethnicityTestScores(tabName);
         }
         if(tabName === "visualization2"){
-            genderStatisticsByColumnName(tabName, "race_ethnicity");
+            ethnicityStatisticsByColumnName(tabName, "gender");
         }
         if(tabName == "visualization3"){
-            genderStatisticsByColumnName(tabName, "parental_level_of_education");
+            ethnicityStatisticsByColumnName(tabName, "parental_level_of_education");
         }
         if(tabName == "visualization4"){
-            genderStatisticsByColumnName(tabName, "lunch");
+            ethnicityStatisticsByColumnName(tabName, "lunch");
         }
         if(tabName == "visualization5"){
-            genderStatisticsByColumnName(tabName, "test_preparation_course");
+            ethnicityStatisticsByColumnName(tabName, "test_preparation_course");
         }
 }
 
 function printTitle(columnName){
     var name = columnName
     switch(columnName){
-        case "race_ethnicity":
-            name = "Ethnicity";
+        case "gender":
+            name = "Gender";
             break;
         case "parental_level_of_education":
             name =  "Parent's Education Level ";
@@ -115,7 +115,7 @@ function generateColors(length) {
     return Array.from({ length: length }, (_, i) => colors(i));
 }
 
-function genderStatisticsByColumnName(tabName, columnName){
+function ethnicityStatisticsByColumnName(tabName, columnName){
     var subGroup = [...new Set(studyData.map(d => d[columnName]))];
     subGroup.sort();
 
@@ -126,7 +126,7 @@ function genderStatisticsByColumnName(tabName, columnName){
     var groups = d3.rollup(
       studyData,
       (v) => v.length,
-      (d) => d.gender,
+      (d) => d.race_ethnicity,
       (d) => d[columnName]
     );
     
@@ -222,11 +222,11 @@ function genderStatisticsByColumnName(tabName, columnName){
     .attr("y", 0)
     .attr("text-anchor", "middle")
     .attr("font-size", "12px")
-    .text(printTitle(columnName) + " by Gender");
+    .text(printTitle(columnName) + " by Ethnicity");
 
 }
 
-function genderTestScores(tabName){
+function ethnicityTestScores(tabName){
     const margin = {top: 15, right: 40, bottom: 40, left: 50}
     const width = 460 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
@@ -246,7 +246,7 @@ function genderTestScores(tabName){
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         const xScale = d3.scaleBand()
-                        .domain(studyData.map(data => data.gender))
+                        .domain(studyData.map(data => data.race_ethnicity).sort())
                         .range([0, width])
                         .padding(0.05);
 
@@ -263,7 +263,7 @@ function genderTestScores(tabName){
                             .domain(yScale.domain())
                             .thresholds(yScale.ticks(20));
 
-        var sumstat = d3.group(studyData, data => data.gender);
+        var sumstat = d3.group(studyData, data => data.race_ethnicity);
 
         var sumstatArray = Array.from(sumstat, ([key, value]) => {
                 var input = value.map(data => +data[test_scores[i]]);
@@ -271,12 +271,12 @@ function genderTestScores(tabName){
                 return { key: key, value: bins};
             });
 
+
         var maxNum = d3.max(sumstatArray, d => d3.max(d.value, v=>v.length));
 
         var xNum = d3.scaleLinear()
                     .range([0, xScale.bandwidth()])
                     .domain([-maxNum, maxNum]);
-
 
         svg.selectAll("path")
         .data(sumstatArray)
@@ -305,14 +305,14 @@ function genderTestScores(tabName){
             .attr("y", 0)
             .attr("text-anchor", "middle")
             .attr("font-size", "12px")
-            .text(printScoreName(test_scores[i]) + " V.S. Gender");
+            .text(printScoreName(test_scores[i]) + " V.S. Ethnicity");
 
         svg.append("text")
             .attr("x", width / 2)
             .attr("y", height + margin.bottom)
             .attr("text-anchor", "middle")
             .attr("font-size", "12px")
-            .text("Gender");
+            .text("Ethnicity");
 
         svg.append("text")
             .attr("transform", "rotate(-90)")

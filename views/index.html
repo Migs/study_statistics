@@ -7,13 +7,16 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body> 
-    <select id="visualizationSelect" onchange="loadVisualization()">
+    <select id="visualizationSelect">
         <option value="tab1">Gender Statistics</option>
+        <option value="tab2">Ethnicity Statistics</option>
     </select>
     <div id="visualizationContainer"></div>
 
-    <script type="module" src="../public/driver.js">
-
+    <script type="module">
+        import {loadVisualization} from "../public/driver.js";
+        document.getElementById("visualizationSelect").addEventListener("change", loadVisualization);
+        loadVisualization();
     </script>
 </body>
 </html>
