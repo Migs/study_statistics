@@ -79,7 +79,6 @@ function loadBarCountVisualizations(column1, column2){
     var subGroup = [...new Set(studyData.map(d => d[column2]))];
     subGroup.sort();
 
-    console.log()
     const margin = { top: 50, right: 40, bottom: 40, left: 50 };
     const width = 600 - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
