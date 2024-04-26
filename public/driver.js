@@ -1,12 +1,16 @@
-import { genderStatistics} from "../public/gender_visualizations.js";
-import {ethnicityStatistics} from "../public/ethnicity_visualizations.js"
-
+import { violinStatistics} from "./violin_visualizations.js";
+import {barStatistics} from "./bar_visualizations.js";
+import {correlationStatistics} from "./correlation_visualizations.js";
+ 
 const visualizations = {
     tab1:{
-        visualization1: genderStatistics
+        visualization1: violinStatistics
     },
     tab2:{
-        visualization2: ethnicityStatistics
+        visualization2: barStatistics
+    },
+    tab3:{
+        visualization3: correlationStatistics
     }
 };
 
