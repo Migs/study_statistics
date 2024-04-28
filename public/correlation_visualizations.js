@@ -2,6 +2,13 @@ import { fetch_data } from './read_data.js';
 
 let studyData;
 
+/**
+ * correlationStatistics
+ * 
+ * Purpose: Generate a correlation matrix for the test scores.
+ * 
+ * @param {string} containerId - The ID of the HTML element where the visualization will be rendered.
+ */
 export function correlationStatistics(containerId){
     fetch_data('../data/study_performance.csv').then(Data => {
 
@@ -20,6 +27,12 @@ export function correlationStatistics(containerId){
     })
 }
 
+/**
+ * updateVisualization
+ * 
+ * Purpose: Calculates the correlation between the three scores and generates the
+ *          correlation matrix. Displays it in the visualization area.
+ */
 export function updateVisualization(){
     const margin = { top: 50, right: 40, bottom: 40, left: 100 };
     const width = 600 - margin.left - margin.right;
@@ -60,10 +73,6 @@ export function updateVisualization(){
             .domain(groups1)
             .padding(0.05);
 
-    // var colorScale = d3.scaleSequential()
-    //     .interpolator(d3.interpolateInferno)
-    //     .domain([0,1]);
-
     var svg = d3.select("#visualization")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -71,7 +80,6 @@ export function updateVisualization(){
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    // Define color scale for the heatmap
     var colorScale = d3.scaleLinear()
     .domain([-1, 1])
     .range(["red", "green"]);
@@ -91,7 +99,6 @@ export function updateVisualization(){
             .style("stroke", "none")
             .style("opacity", 0.8);
 
-    
     svg.selectAll()
         .data(correlationData, d=> d.feature1+ ":"+d.feature2)
         .enter()
